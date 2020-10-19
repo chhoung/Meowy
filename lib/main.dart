@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
+import 'package:gallery_saver/gallery_saver.dart';
+import 'bottomsheet.dart';
 
 void main() {
   runApp(MyApp());
@@ -11,23 +13,31 @@ class MyApp extends StatefulWidget {
   _MyAppState createState() => _MyAppState();
 }
 
-Future<String> getMeow() async {
-  var url = 'https://aws.random.cat/meow';
-  var response = await http.get(url);
-  var imageUrl;
-
-  if (response.statusCode == 200) {
-    var jsonResponse = convert.jsonDecode(response.body);
-    imageUrl = jsonResponse['file'];
-
-    print(imageUrl);
-  } else {
-    print('Request failed with status: ${response.statusCode}.');
-  }
-  return imageUrl;
-}
-
 class _MyAppState extends State<MyApp> {
+  var imageUrl = "";
+
+  void _saveNetworkImage() async {
+    String path = imageUrl;
+    GallerySaver.saveImage(path).then((bool success) {
+      print('Image is saved');
+    });
+  }
+
+  Future<String> getMeow() async {
+    var url = 'https://aws.random.cat/meow';
+    var response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      var jsonResponse = convert.jsonDecode(response.body);
+      imageUrl = jsonResponse['file'];
+
+      print(imageUrl);
+    } else {
+      print('Request failed with status: ${response.statusCode}.');
+    }
+    return imageUrl;
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -62,7 +72,7 @@ class _MyAppState extends State<MyApp> {
                               onPressed: () {
                                 setState(() {});
                               },
-                              child: Text('Save'),
+                              child: Text('Next'),
                             ),
                           ),
                           Padding(
@@ -70,8 +80,10 @@ class _MyAppState extends State<MyApp> {
                             child: RaisedButton(
                               color: Colors.grey,
                               textColor: Colors.black,
-                              onPressed: () {},
-                              child: Text('Share'),
+                              onPressed: () {
+                                _saveNetworkImage();
+                              },
+                              child: Text('Save'),
                             ),
                           ),
                         ],
