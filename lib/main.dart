@@ -99,11 +99,21 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                             textColor: Colors.black,
                             onPressed: () {
                               _saveNetworkImage();
-                              setState(() {
-                                _controller.forward();
-                              });
-                              AlertDialog(
-                                title: Text('Saved'),
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text('Download'),
+                                    content: Text('Image saved'),
+                                    actions: <Widget>[
+                                      FlatButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: Text('Close'))
+                                    ],
+                                  );
+                                },
                               );
                             },
                             child: Text('Save'),
