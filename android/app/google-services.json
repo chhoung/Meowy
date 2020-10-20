@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "726587978570",
+    "firebase_url": "https://meow-2af41.firebaseio.com",
+    "project_id": "meow-2af41",
+    "storage_bucket": "meow-2af41.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:726587978570:android:29dc305d8c0785dfaf87b3",
+        "android_client_info": {
+          "package_name": "com.example.kittiepie"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "726587978570-9a3pagv1argpm16ffd3gcaism5cgcog7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBJPzP2EWdxOmDycSjBgxJW7mmQoaF29M0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "726587978570-9a3pagv1argpm16ffd3gcaism5cgcog7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
