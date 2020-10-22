@@ -17,11 +17,19 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
   var imageUrl = "";
   AnimationController _controller;
   Animation<double> _animation;
+  bool isDownloading = false;
 
-  void _saveNetworkImage() async {
+  Future<void> _saveNetworkImage() async {
+    setState(() {
+      isDownloading = true;
+    });
+
     String path = imageUrl;
     GallerySaver.saveImage(path).then((bool success) {
       print('Image is saved');
+      setState(() {
+        isDownloading = false;
+      });
     });
   }
 
@@ -56,96 +64,123 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
   }
 
   @override
+  void setState(fn) {
+    super.setState(fn);
+    if (!isDownloading) {
+      _controller.forward();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData.dark(),
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         body: Center(
-          child: FutureBuilder(
-            future: getMeow(),
-            builder: (context, snapshot) {
-              if (snapshot.data == null) {
-                return Center(
-                  child: Text('Loading...'),
-                );
-              } else {
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Image.network(
-                      snapshot.data,
-                      height: 300,
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Row(
+          child: isDownloading
+              ? Container(
+                  height: 120.0,
+                  width: 200.0,
+                  child: Card(
+                    color: Colors.black,
+                    child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        Padding(
-                          padding: EdgeInsets.all(20.0),
-                          child: RaisedButton(
-                            onPressed: () {
-                              setState(() {});
-                            },
-                            child: Text('Next'),
-                          ),
+                        CircularProgressIndicator(),
+                        SizedBox(
+                          height: 15.0,
                         ),
-                        Padding(
-                          padding: EdgeInsets.all(20.0),
-                          child: RaisedButton(
-                            color: Colors.grey,
-                            textColor: Colors.black,
-                            onPressed: () {
-                              _saveNetworkImage();
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    title: Text('Download'),
-                                    content: Text('Image saved'),
-                                    actions: <Widget>[
-                                      FlatButton(
-                                          onPressed: () {
-                                            Navigator.of(context).pop();
-                                          },
-                                          child: Text('Close'))
-                                    ],
-                                  );
-                                },
-                              );
-                            },
-                            child: Text('Save'),
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.all(20.0),
-                          child: RaisedButton(
-                            color: Colors.grey,
-                            textColor: Colors.black,
-                            onPressed: () {
-                              final RenderBox box = context.findRenderObject();
-                              Share.share(imageUrl,
-                                  subject: 'Meow',
-                                  sharePositionOrigin:
-                                      box.localToGlobal(Offset.zero) &
-                                          box.size);
-                            },
-                            child: Text('Share'),
-                          ),
-                        ),
+                        Text('Downloading File'),
                       ],
                     ),
-                    FadeTransition(
-                      opacity: _animation,
-                      child: Text('Image Saved!'),
-                    ),
-                  ],
-                );
-              }
-            },
-          ),
+                  ),
+                )
+              : FutureBuilder(
+                  future: getMeow(),
+                  builder: (context, snapshot) {
+                    if (snapshot.data == null) {
+                      return Center(
+                        child: Text('Loading...'),
+                      );
+                    } else {
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Image.network(
+                            snapshot.data,
+                            height: 300,
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Padding(
+                                padding: EdgeInsets.all(20.0),
+                                child: RaisedButton(
+                                  onPressed: () {
+                                    setState(() {});
+                                  },
+                                  child: Text('Next'),
+                                ),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.all(20.0),
+                                child: RaisedButton(
+                                  color: Colors.grey,
+                                  textColor: Colors.black,
+                                  onPressed: () {
+                                    _saveNetworkImage();
+                                    // showDialog(
+                                    //   context: context,
+                                    //   builder: (BuildContext context) {
+                                    //     return AlertDialog(
+                                    //       title: Text('Download'),
+                                    //       content: Text('Image saved'),
+                                    //       actions: <Widget>[
+                                    //         FlatButton(
+                                    //             onPressed: () {
+                                    //               Navigator.of(context).pop();
+                                    //             },
+                                    //             child: Text('Close'))
+                                    //       ],
+                                    //     );
+                                    //   },
+                                    // );
+                                  },
+                                  child: Text('Save'),
+                                ),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.all(20.0),
+                                child: RaisedButton(
+                                  color: Colors.grey,
+                                  textColor: Colors.black,
+                                  onPressed: () {
+                                    final RenderBox box =
+                                        context.findRenderObject();
+                                    Share.share(imageUrl,
+                                        subject: 'Meow',
+                                        sharePositionOrigin:
+                                            box.localToGlobal(Offset.zero) &
+                                                box.size);
+                                  },
+                                  child: Text('Share'),
+                                ),
+                              ),
+                            ],
+                          ),
+                          FadeTransition(
+                            opacity: _animation,
+                            child: Text('Image Saved!'),
+                          ),
+                        ],
+                      );
+                    }
+                  },
+                ),
         ),
       ),
     );
